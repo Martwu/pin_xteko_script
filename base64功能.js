@@ -10,18 +10,18 @@ function get_view_origin_text(txt_handle, origin_txt, txt_tgt_id) {
       align: $align.left,
       clearButtonMode: 1,
     },
-    layout: function (make) {
+    layout: function(make) {
       make.top.leading.trailing.inset(10);
       make.height.equalTo(36)
     },
     events: {
-      changed: function (sender) {
+      changed: function(sender) {
         txt_handle()
       },
-      ready: function (sender) {
+      ready: function(sender) {
         sender.focus()
       },
-      returned: function (sender) {
+      returned: function(sender) {
         txt_handle();
         $clipboard.text = $(txt_tgt_id).text;
         $device.taptic();
@@ -40,7 +40,7 @@ function get_view_b64_text(b64_txt) {
       text: b64_txt,
       font: $font("normal", 16),
     },
-    layout: function (make) {
+    layout: function(make) {
       var origin_text = $("origin_text");
       make.left.equalTo(origin_text.left);
       make.top.equalTo(origin_text.bottom).offset(5);
@@ -63,20 +63,23 @@ function get_view_main(txt_handle, txt_src, txt_tgt, txt_tgt_id) {
 // 选择编码或者解码的菜单
 menu_encode_or_decode = {
   items: ["编码", "解码"],
-  handler: function (title, idx) {
+  handler: function(title, idx) {
+    if (idx > 1) {
+      $app.close()
+    }
     if (idx == 0) {
       txt_src = $clipboard.text
       txt_tgt = $text.base64Encode($clipboard.text)
       txt_tgt_id = "b64_text"
-      txt_handle = function () {
+      txt_handle = function() {
         var result = $text.base64Encode($("origin_text").text)
         $(txt_tgt_id).text = result
       }
-    } else {
+    } else if (idx == 1) {
       txt_src = $text.base64Decode($clipboard.text)
       txt_tgt = $clipboard.text
       txt_tgt_id = "origin_text"
-      txt_handle = function () {
+      txt_handle = function() {
         var result = $text.base64Decode($("b64_text").text)
         $(txt_tgt_id).text = result
       }
