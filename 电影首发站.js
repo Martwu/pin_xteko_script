@@ -8,7 +8,7 @@ const regex_baiduyun = /<p>(.*?)<a href="(http:\/\/pan.baidu.com\/.*?)" target="
 // 资源 磁力或者电驴 match[1] url, match[2] title
 const regex_magnet_or_ed2k = /<p><a href="(magnet:\?xt=urn:btih:.*?|ed2k:\/\/.*?)" target="_blank">(.*?)<\/a><\/p>/g
 
-const search_key = $text.URLEncode("同盟")
+const search_key = $text.URLEncode($clipboard.text)
 const url_main = `http://www.dysfz.cc/key/${search_key}/`
 
 var search_result_title = []
@@ -72,7 +72,11 @@ function get_result(url) {
                     res_content.push({ u: match[1] })
                     match = regex_magnet_or_ed2k.exec(html)
                 }
-                make_resource_menu(res_title, res_content)
+                if (res_title.length == 0) {
+                    $ui.toast("暂无下载资源")
+                } else {
+                    make_resource_menu(res_title, res_content)
+                }
             }
         }
     )
@@ -93,9 +97,9 @@ function make_resource_menu(titles, contents) {
     menu_content = {
         items: titles,
         handler: function (title, idx) {
-            if (title.indexOf("b: " == 0)) {
-                $clipboard.text = contents[idx]["p"]
+            if (title.indexOf("b: ") == 0) {
                 $ui.toast("分享密码已拷贝至粘贴板")
+                $clipboard.text = contents[idx]["p"]
                 $safari.open({ url: contents[idx]["u"] })
             }
             if (title.indexOf("t: ") == 0) {
@@ -108,4 +112,3 @@ function make_resource_menu(titles, contents) {
 }
 
 get_search_result(url_main)
-//get_result("http://www.dysfz.cc/movie20527.html")
